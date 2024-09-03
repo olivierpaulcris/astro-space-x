@@ -1,0 +1,69 @@
+---
+import type { GetStaticPaths } from "astro";
+import { getLatestLaunches, getLaunchById } from "../../services/spacex";
+import Layout from "../../layouts/Layout.astro";
+import Header from "../../components/Header.astro";
+
+const { id } = Astro.params;
+
+let launch;
+
+if (id) {
+    launch = await getLaunchById({ id });
+    Astro.redirect("/");
+}
+
+export async function getStaticPaths() {
+    const launches = await getLatestLaunches();
+
+    return launches.map((launch) => ({
+        params: { id: launch.id },
+    }));
+}
+---
+
+<Layout title={`Lanzamiento ${id}`}>
+    <article class="flex gap-y-4 flex-col">
+        <img
+            class="w-52 h-auto"
+            src={launch?.links?.patch?.small}
+            alt={launch?.name}
+        />
+
+        <h2 class="text-4xl text-white fold-bold">
+            Lanzamiento #{launch?.flight_number}
+        </h2>
+
+        <p class="text-2xl text-white fold-bold">Nombre:</p>
+        <p class="text-lg text-white">{launch?.name}</p>
+
+        <p class="text-2xl text-white fold-bold">Descripción:</p>
+        <p class="text-lg text-white">{launch?.details}</p>
+
+        <p class="text-2xl text-white fold-bold">Resultado:</p>
+        <p class="text-lg text-white">
+            {launch?.success ? "Exito" : "Fracaso"}
+        </p>
+
+        <p class="text-2xl text-white fold-bold">Fecha:</p>
+        <p class="text-lg text-white">
+            {
+                launch?.date_utc
+                    ? new Date(launch?.date_utc || "").toLocaleDateString(
+                          "es-MX",
+                          {
+                              year: "numeric",
+                              month: "2-digit",
+                              day: "2-digit",
+                          },
+                      )
+                    : "Fecha no disponible"
+            }
+        </p>
+
+        <p class="text-2xl text-white fold-bold">Fallas:</p>
+        <p class="text-lg text-white">
+            {launch?.failures.map((item) => item.reason)}
+        </p>
+    </article>
+</Layout>
