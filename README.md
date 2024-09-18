@@ -4,7 +4,7 @@
 
 ## Description
 
-Website using Astro and SpaceX API.
+Website using Astro and SpaceX API, developed in 2024.
 
 ## Index
 
