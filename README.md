@@ -23,7 +23,7 @@ npm install -g astro
 ## Usage
 
 ```
-astro dev
+astro dev 
 ```
 
 
